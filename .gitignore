@@ -1,0 +1,8 @@
+Code.gs
+*.backup*
+scratch/
+temp_check.js
+ИНСТРУКЦИЯ*
+WebDashboard.html
+README.md
+.DS_Store
