@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box !important;
+    }
+
+    html {
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow-x: hidden !important;
+      width: 100% !important;
+      max-width: 100vw !important;
+    }
+
+    body {
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow-x: hidden !important;
+      width: 100% !important;
+      max-width: 100vw !important;
+      font-family: 'Outfit', sans-serif;
+      background: #f1f5f9;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .emerald-gradient {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .wave {
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 30px;
+      line-height: 0;
+    }
+
+    .wave svg {
+      position: relative;
+      display: block;
+      width: 100%;
+      max-width: 100% !important;
+      height: 30px;
+      overflow: hidden;
+    }
+
+    .wave .shape-fill {
+      fill: #ffffff;
+    }
+
+    .btn-toggle {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 2px solid #e2e8f0;
+      background: #f8fafc;
+    }
+
+    .btn-toggle.active {
+      background: #059669;
+      color: white;
+      border-color: #059669;
+      transform: scale(0.98);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: #059669 !important;
+      outline: none;
+    }
+
+    .input-error {
+      border-color: #ef4444 !important;
+      background-color: #fef2f2 !important;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .modal-overlay {
+      background: rgba(6, 78, 59, 0.85);
+      backdrop-filter: blur(5px);
+    }
+
+    .card {
+      background: white;
+      border-radius: 2.5rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+    }
+
+    .info-box {
+      background: #ecfdf5;
+      border: 2px solid #d1fae5;
+      border-radius: 1.5rem;
+    }
+
+    .manage-box {
+      background: #fff7ed;
+      border: 2px solid #ffedd5;
+      border-radius: 2rem;
+    }
+
+    .waitlist-btn {
+      background: #f59e0b !important;
+    }
+
+    .ticket-border {
+      border-image: url("data:image/svg+xml,%3Csvg width='40' height='10' viewBox='0 0 40 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='10' r='5' fill='%23f1f5f9'/%3E%3C/svg%3E") 0 0 100% 0 repeat;
+    }
+
+    @keyframes pulse-soft {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.02);
+      }
+    }
+
+    .pulse {
+      animation: pulse-soft 2s infinite;
+    }
+
+    @keyframes flash {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    .flash-text {
+      animation: flash 1.5s infinite;
+    }
+
+    .service-card {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 2px solid #f1f5f9;
+      background: white;
+      cursor: pointer;
+    }
+
+    .service-card.active {
+      border-color: #059669;
+      background: #ecfdf5;
+      transform: scale(1.02);
+      box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.1);
+    }
+
+    .modal-agreement {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .agreement-content {
+      background: white;
+      width: 100%;
+      max-width: 500px;
+      max-height: 80vh;
+      border-radius: 2rem;
+      overflow-y: auto;
+      padding: 2rem;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    .agreement-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(4px);
+    }
+
+    .agreement-text {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #334155;
+      white-space: pre-line;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .checkbox-item input {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      border: 2px solid #e2e8f0;
+      margin-top: 2px;
+    }
+
+    .checkbox-item span {
+      font-size: 12px;
+      font-weight: 700;
+      color: #64748b;
+      line-height: 1.4;
+    }
+
+    .checkbox-item a {
+      color: #10b981;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    #mainSubmitBtn:disabled {
+      opacity: 0.4;
+      filter: grayscale(1);
+      cursor: not-allowed;
+    }
+
+    .service-card.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      filter: grayscale(1);
+    }
+
+    /* Стили для защиты от зависания в In-App браузерах */
+    #loadFailsafe {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(255, 255, 255, 0.98);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
+
+    .failsafe-card {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 3rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+      border: 2px solid #f1f5f9;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    /* Исправление модальных окон для iframe на iOS */
+    body.in-iframe #confirmModal,
+    body.in-iframe #successModal,
+    body.in-iframe #manageModal,
+    body.in-iframe #loadFailsafe,
+    body.in-iframe .modal-agreement {
+      position: relative !important;
+      inset: auto !important;
+      width: 100% !important;
+      min-height: 100vh !important;
+      height: auto !important;
+    }
+
+    /* Убираем зелёный overlay в iframe (зелёная плёнка на iPhone) */
+    body.in-iframe .modal-overlay {
+      display: none !important;
+    }
+
+    /* Правило для 100% ширины удалено, чтобы форма была по центру на ПК */
+
+    /* Модалки в iframe: простой блок вместо flex (iOS ломает flex в iframe) */
+    body.in-iframe #confirmModal:not(.hidden),
+    body.in-iframe #manageModal:not(.hidden),
+    body.in-iframe #successModal:not(.hidden) {
+      display: block !important;
+      padding: 0.5rem !important;
+    }
+
+    /* Карточки модалок — тоже простой блок, без ограничений высоты */
+    body.in-iframe #confirmModal > div:last-child,
+    body.in-iframe #successModal > div:last-child,
+    body.in-iframe #manageModal > div:last-child {
+      display: block !important;
+      max-height: none !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      height: auto !important;
+      overflow: visible !important;
+      border-radius: 0 !important;
+    }
+
+    /* Прокручиваемая секция внутри модалки — убираем overflow (iOS не скроллит) */
+    body.in-iframe #confirmModal .overflow-y-auto,
+    body.in-iframe #successModal .overflow-y-auto {
+      overflow: visible !important;
+      flex: none !important;
+    }
+
+    /* Уменьшаем внутренний padding формы в iframe */
+    body.in-iframe #bookingForm {
+      padding-left: 0.5rem !important;
+      padding-right: 0.5rem !important;
+    }
+
+    /* Уменьшаем padding выпадающего списка дат для ширины */
+    body.in-iframe #date {
+      padding-left: 0.75rem !important;
+      padding-right: 0.75rem !important;
+      font-size: 0.95rem !important;
+    }
+    /* Ограничение ширины формы на десктопе (по центру, как раньше) */
+    .card.max-w-2xl {
+      max-width: 42rem !important;
+      margin: 0 auto !important;
+    }
+  </style>
+</head>
+
+<body class="p-0 sm:p-4 md:p-8 text-slate-900" style="margin:0;padding:0;width:100%;max-width:100vw;overflow-x:hidden;">
+
+  <div class="max-w-2xl mx-auto card sm:rounded-[2.5rem] rounded-none overflow-hidden shadow-none sm:shadow-2xl" style="width:calc(100vw - 16px);max-width:42rem;overflow:hidden;margin:0 auto;">
+    <div class="emerald-gradient p-6 sm:p-10 md:p-12 text-center pb-20">
+      <div class="text-4xl mb-4 drop-shadow-sm">🚣</div>
+      <h1 class="text-xl md:text-2xl font-black text-white leading-tight uppercase tracking-widest drop-shadow-md">
+        Выберите дату и забронируйте сплав</h1>
+      <p class="text-white font-bold text-[10px] mt-4 tracking-[0.4em] uppercase opacity-80 relative z-10">MAZAY SPLAV
+      </p>
+      <div class="wave">
+        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" style="width:100%;max-width:100%;display:block;overflow:hidden;">
+          <path
+            d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C58.47,85.19,122.18,79.49,185.3,74.69c62.73-4.76,124.63-7.46,136.09-18.25Z"
+            class="shape-fill"></path>
+        </svg>
+      </div>
+    </div>
+
+    <form id="bookingForm" class="p-6 md:p-10 space-y-8" onsubmit="event.preventDefault(); handleSubmit();">
+      <div class="space-y-3">
+        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">📅 Доступные сплавы</label>
+        <select id="date" required onchange="updatePrices()"
+          class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-3xl text-slate-900 font-bold text-sm md:text-base appearance-none cursor-pointer">
+          <option value="" disabled selected id="datePlaceholder">Загрузка дат...</option>
+        </select>
+        <div id="weekdayWarning"
+          class="hidden p-5 bg-amber-50 border-2 border-amber-100 rounded-3xl text-amber-900 text-xs flex gap-3">
+          <span class="text-xl">⚠️</span>
+          <div>
+            <p class="font-bold leading-snug">Сплав состоится при общем количестве группы от 12 человек.</p>
+            <p class="text-[10px] font-black text-amber-600 mt-1 uppercase tracking-tighter">Мы с вами свяжемся за
+              несколько дней до сплава.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="space-y-2">
+          <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Имя *</label>
+          <input type="text" id="name" required placeholder="Ваше имя"
+            class="w-full p-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-bold text-lg">
+        </div>
+        <div class="space-y-2 relative">
+          <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Телефон *</label>
+          <input type="tel" id="phone" oninput="handlePhoneInput()" placeholder="29 123-45-67"
+            class="w-full p-5 bg-slate-50 border-2 border-slate-100 rounded-3xl font-bold text-lg">
+          <p id="phoneError" class="hidden text-[10px] text-red-500 font-bold ml-2">код и ровно 7 цифр</p>
+          <div id="searchingBooking" class="hidden absolute right-5 bottom-5">
+            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-slate-900"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Instagram *</label>
+        <div class="relative">
+          <span class="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 font-black text-xl">@</span>
+          <input type="text" id="instagram" placeholder="ваш_ник"
+            class="w-full p-5 pl-14 bg-slate-50 border-2 border-slate-100 rounded-3xl font-bold text-lg">
+        </div>
+      </div>
+
+      <!-- Блок Telegram -->
+      <div class="space-y-4 pt-4 border-t-2 border-dashed border-slate-100">
+        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">У вас установлен
+          Telegram? *</label>
+        <p class="text-[9px] text-slate-500 font-medium leading-relaxed mb-1">
+          Мы используем его для автоматической выдачи билетов. Если нет — ничего страшного, мы свяжемся с вами через
+          Instagram или по телефону.
+        </p>
+        <div class="grid grid-cols-2 gap-4">
+          <button type="button" id="tgYes" onclick="setTelegram('Да')"
+            class="p-5 rounded-3xl border-2 border-emerald-500 bg-emerald-50 text-emerald-700 font-bold text-lg transition-all active:scale-95 shadow-sm">Да</button>
+          <button type="button" id="tgNo" onclick="setTelegram('Нет')"
+            class="p-5 rounded-3xl border-2 border-slate-100 bg-slate-50 text-slate-400 font-bold text-lg transition-all active:scale-95">Нет</button>
+          <input type="hidden" id="hasTelegram" value="Да">
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Количество
+          участников</label>
+        <div class="grid grid-cols-2 gap-5 p-6 bg-slate-50 rounded-[2.5rem] border-2 border-slate-100 shadow-inner">
+          <div class="text-center space-y-3">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Взрослые</p>
+            <div class="flex items-center justify-center gap-6">
+              <button type="button" onclick="changeQty('adults', -1)"
+                class="w-14 h-14 rounded-2xl bg-white border-2 border-slate-200 flex items-center justify-center font-black text-2xl shadow-sm">-</button>
+              <input type="number" id="adults" value="1" min="1" readonly
+                class="w-10 text-center bg-transparent font-black text-3xl text-slate-900">
+              <button type="button" onclick="changeQty('adults', 1)"
+                class="w-14 h-14 rounded-2xl bg-white border-2 border-slate-200 flex items-center justify-center font-black text-2xl shadow-sm">+</button>
+            </div>
+          </div>
+          <div class="text-center space-y-3 border-l-2 border-slate-200">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Дети</p>
+            <div class="flex items-center justify-center gap-6">
+              <button type="button" onclick="changeQty('children', -1)"
+                class="w-14 h-14 rounded-2xl bg-white border-2 border-slate-200 flex items-center justify-center font-black text-2xl shadow-sm">-</button>
+              <input type="number" id="children" value="0" min="0" readonly
+                class="w-10 text-center bg-transparent font-black text-3xl text-slate-900">
+              <button type="button" onclick="changeQty('children', 1)"
+                class="w-14 h-14 rounded-2xl bg-white border-2 border-slate-200 flex items-center justify-center font-black text-2xl shadow-sm">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="kayakPreview" class="p-6 bg-slate-900 rounded-[2rem] text-white text-center shadow-2xl space-y-3">
+          <div>
+            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Распределение байдарок</p>
+            <p id="kayakText" class="text-lg font-black tracking-tight leading-snug">Выберите дату для расчета...</p>
+            <div id="kayakExplanation" class="mt-2 px-4"></div>
+          </div>
+          <div id="availabilityInfo" class="hidden pt-3 border-t border-slate-800">
+            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Наличие свободных байдарок
+              на этот сплав</p>
+            <p id="availabilityText" class="text-sm font-bold text-emerald-400"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <label
+          class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 text-red-500 font-black">Выберите
+          способ проезда *</label>
+        <div class="grid grid-cols-2 gap-4">
+          <button type="button" onclick="setTransfer('Нет')" id="btnAuto"
+            class="btn-toggle p-6 rounded-3xl flex flex-col items-center gap-3 font-black">
+            <span class="text-3xl">🚗</span>
+            <span class="text-xs uppercase tracking-widest">Свое авто</span>
+          </button>
+          <button type="button" onclick="setTransfer('Да')" id="btnBus"
+            class="btn-toggle p-6 rounded-3xl flex flex-col items-center gap-3 font-black">
+            <span class="text-3xl">🚌</span>
+            <span class="text-xs uppercase tracking-widest">Трансфер</span>
+          </button>
+        </div>
+
+        <div id="deliveryWarning"
+          class="hidden p-5 bg-amber-50 border-2 border-amber-100 rounded-[2rem] text-amber-900 text-xs flex gap-4 shadow-sm">
+          <span class="text-3xl">⚠️</span>
+          <div>
+            <p class="font-black leading-snug uppercase tracking-[0.2em] text-amber-700 mb-2">ВНИМАНИЕ!</p>
+            <p class="text-slate-700 leading-relaxed font-bold text-[13px]">Для подтверждения бронирования необходимо
+              оплатить доставку оборудования для сплава — <span class="text-amber-600">20 рублей с человека (входит в
+                общую стоимость сплава)</span>.</p>
+            <div class="mt-3 pt-3 border-t border-amber-200 text-slate-600 text-[11px] font-medium leading-relaxed">
+              <p class="mb-2"><b>Пожалуйста, обратите внимание:</b></p>
+              <p>Мы заранее организуем доставку оборудования специально для вас, поэтому в случае отмены или неявки с
+                вашей стороны оплата не возвращается.</p>
+              <p class="mt-2 font-bold">Спасибо за понимание!</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="transferWarning"
+          class="hidden p-5 bg-blue-50 border-2 border-blue-100 rounded-3xl text-blue-900 text-xs flex gap-3">
+          <span class="text-xl">🚌</span>
+          <div>
+            <p id="transferWarningText" class="font-bold leading-snug">Трансфер возможен при общем количестве участников
+              от 12 человек.</p>
+            <p class="text-[10px] font-black text-blue-600 mt-1 uppercase tracking-tighter">Мы с вами свяжемся за
+              несколько дней до сплава.</p>
+          </div>
+        </div>
+        <p id="transferLimitInfo"
+          class="hidden text-[10px] font-black text-red-600 uppercase tracking-widest text-center animate-pulse"></p>
+        <input type="hidden" id="transfer" value="">
+        <div id="gpsBlock"
+          class="hidden p-5 bg-red-50 border-2 border-red-100 rounded-3xl text-red-700 text-sm flex flex-col gap-2 items-center text-center">
+          <p class="font-black text-base uppercase tracking-tighter">📍 Точка сбора (GPS):</p>
+          <p id="gpsValue"
+            class="font-black text-xl select-all tracking-tight bg-white px-4 py-2 rounded-xl border border-red-200 shadow-sm">
+            --</p>
+          <div class="space-y-1">
+            <p class="text-xs font-black uppercase tracking-widest text-red-500">Важно:</p>
+            <p class="text-xs font-bold leading-relaxed italic">Пожалуйста, постарайтесь прибыть за 30 минут до начала
+              сплава по указанным координатам.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-3 text-center">
+        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">🐾 Мы Dog Friendly</p>
+        <button type="button" onclick="toggleDog()" id="btnDog"
+          class="w-full btn-toggle p-6 rounded-3xl flex items-center justify-center gap-4 font-black text-lg">
+          <span class="text-3xl">🐾</span>
+          <span class="uppercase tracking-widest text-sm">Я буду с собакой</span>
+        </button>
+        <input type="hidden" id="dog" value="Нет">
+        <input type="hidden" id="k2" value="0">
+        <input type="hidden" id="k3" value="0">
+      </div>
+
+      <!-- Бронирование жилья на территории нашей базы -->
+      <div id="accommodationSection" class="hidden space-y-6 pt-6 border-t-2 border-dashed border-slate-100">
+        <div class="text-center space-y-2">
+          <label class="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] block">🏠 Бронирование жилья
+            на территории нашей базы</label>
+          <p class="text-[10px] text-slate-400 font-bold italic">Выберите вариант ночлега, если планируете остаться</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div id="acc_camper" onclick="setAccommodation('Кемпер')"
+            class="service-card p-4 rounded-[2rem] flex flex-col items-center text-center space-y-2">
+            <span class="text-3xl">🚐</span>
+            <span class="text-xs font-black uppercase tracking-tighter">Кемпер (4-5 чел.)</span>
+            <span id="price_camper_label" class="text-[10px] font-bold text-emerald-600">-- BYN</span>
+            <span id="rem_camper_label" class="text-[8px] font-black uppercase text-slate-400">Свободно</span>
+          </div>
+
+          <div id="acc_tipi" onclick="setAccommodation('Типи')"
+            class="service-card p-4 rounded-[2rem] flex flex-col items-center text-center space-y-2">
+            <span class="text-3xl">🛖</span>
+            <span class="text-xs font-black uppercase tracking-tighter">Типи (4 чел.)</span>
+            <span id="price_tipi_label" class="text-[10px] font-bold text-emerald-600">-- BYN</span>
+            <span id="rem_tipi_label" class="text-[8px] font-black uppercase text-slate-400">Свободно</span>
+          </div>
+
+          <div id="acc_safari" onclick="setAccommodation('Сафари-тент')"
+            class="service-card p-4 rounded-[2rem] flex flex-col items-center text-center space-y-2">
+            <span class="text-3xl">⛺</span>
+            <span class="text-xs font-black uppercase tracking-tighter">Сафари-тент (5 чел.)</span>
+            <span id="price_safari_label" class="text-[10px] font-bold text-emerald-600">-- BYN</span>
+            <span id="rem_safari_label" class="text-[8px] font-black uppercase text-slate-400">Свободно</span>
+          </div>
+
+          <div id="acc_our_tent" onclick="setAccommodation('Наша палатка')"
+            class="service-card p-4 rounded-[2rem] flex flex-col items-center text-center space-y-2">
+            <span class="text-3xl">⛺</span>
+            <span class="text-xs font-black uppercase tracking-tighter">Наша палатка (3-х мест.)</span>
+            <span id="price_ourtent_label" class="text-[10px] font-bold text-emerald-600">-- BYN</span>
+            <span id="rem_ourtent_label" class="text-[8px] font-black uppercase text-slate-400">Свободно</span>
+          </div>
+
+          <div id="acc_own_tent" onclick="setAccommodation('Своя палатка')"
+            class="service-card p-4 rounded-[2rem] flex flex-col items-center text-center space-y-2">
+            <span class="text-3xl">🏕️</span>
+            <span class="text-xs font-black uppercase tracking-tighter">Своя палатка</span>
+            <span id="price_owntent_label" class="text-[10px] font-bold text-emerald-600">-- BYN</span>
+            <span class="text-[8px] font-black uppercase text-emerald-500">Доступно много</span>
+          </div>
+        </div>
+
+        <input type="hidden" id="selectedAccommodation" value="нет">
+        <input type="hidden" id="accommodationPrice" value="0">
+
+        <div class="space-y-4 pt-4 border-t border-slate-100">
+          <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center block">🧖
+            Дополнительно</label>
+          <div class="grid grid-cols-1 gap-4">
+            <div id="extra_sauna_hot" onclick="setExtraService('Баня + Купель')"
+              class="service-card p-6 rounded-[2.5rem] flex flex-col items-center text-center space-y-2">
+              <span class="text-4xl">🛁</span>
+              <span class="text-sm font-black uppercase tracking-tighter">Баня + Купель</span>
+              <span id="price_saunahot_label" class="text-lg font-bold text-emerald-600">-- BYN</span>
+              <span id="rem_saunahot_label" class="text-[10px] font-black uppercase text-slate-400"></span>
+            </div>
+          </div>
+          <input type="hidden" id="selectedExtra" value="нет">
+          <input type="hidden" id="extraPrice" value="0">
+        </div>
+      </div>
+
+      <div id="foodBlock" class="hidden p-6 bg-emerald-50 border-4 border-emerald-200 rounded-3xl space-y-4 shadow-sm">
+        <div class="flex items-center gap-3">
+          <span class="text-4xl">🥗</span>
+          <div>
+            <label class="text-sm font-black text-emerald-800 uppercase tracking-tighter block">Особенности по
+              питанию</label>
+            <span class="text-[10px] font-black text-emerald-600 uppercase tracking-tight">Аллергены, веган, без глютена
+              и т.д.</span>
+          </div>
+        </div>
+        <input type="text" id="foodPrefs" placeholder="Например: аллергия на мед..."
+          class="w-full p-5 bg-white border-2 border-emerald-300 rounded-2xl font-black text-lg text-emerald-900 placeholder:text-emerald-300 focus:border-emerald-500 focus:ring-0 transition-all outline-none shadow-inner">
+      </div>
+
+      <div class="space-y-3">
+        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Дополнительно</label>
+        <p class="text-[10px] text-slate-400 italic -mt-1 ml-1 leading-relaxed">здесь можно написать все, что не вошло в
+          анкету</p>
+        <textarea id="comment" rows="3" placeholder="Ваши пожелания..."
+          class="w-full p-6 bg-slate-50 border-2 border-slate-100 rounded-[2rem] font-bold text-lg"></textarea>
+      </div>
+
+      <div id="weekdayFooterInfo" class="hidden p-6 bg-slate-100 rounded-[2rem] border-2 border-slate-200 space-y-3">
+        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">⚠️ Условия бронирования:</p>
+        <div class="space-y-1">
+          <p id="footerGroupInfo" class="hidden text-xs font-bold text-slate-700 leading-snug">• Сплав состоится при
+            наборе группы от 12 человек.</p>
+          <p id="footerTransferInfo" class="hidden text-xs font-bold text-slate-700 leading-snug">• Трансфер возможен
+            при общем количестве участников от 12 человек.</p>
+        </div>
+        <p class="text-xs font-black text-emerald-600 border-t border-slate-200 pt-2">Мы с вами свяжемся за несколько
+          дней до сплава.</p>
+      </div>
+
+      <div class="bg-slate-50 border-t-4 border-slate-100 -mx-10 p-10 mt-6">
+        <div class="flex justify-between items-center">
+        </div>
+
+        <div class="space-y-4 pt-6 border-t border-slate-100">
+          <label class="checkbox-item">
+            <input type="checkbox" id="check_contract" onchange="validateAgreements()">
+            <span>Я ознакомлен и согласен с <a onclick="showAgreement('contract')">условиями договора</a></span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" id="check_policy" onchange="validateAgreements()">
+            <span>Я ознакомлен и согласен с <a onclick="showAgreement('policy')">политикой обработки персональных
+                данных</a></span>
+          </label>
+        </div>
+
+        <div class="flex justify-between items-center pt-6 gap-2">
+          <div class="min-w-0 flex-shrink">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">К оплате</p>
+            <p id="totalSum" class="text-2xl sm:text-4xl font-black text-slate-900 tracking-tighter leading-none">0 BYN</p>
+          </div>
+          <button type="submit" id="mainSubmitBtn" disabled
+            class="shrink-0 bg-slate-900 text-white px-5 sm:px-10 py-5 sm:py-6 rounded-3xl font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-2xl active:scale-95 transition-all">
+            Забронировать
+          </button>
+        </div>
+      </div>
+  </div>
+  </form>
+  </div>
+
+  <div id="manageModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 modal-overlay" onclick="hideManageModal(); restoreFromModal();"></div>
+    <div
+      class="bg-white relative w-full max-w-md rounded-[3rem] shadow-2xl overflow-hidden p-8 md:p-10 space-y-8 text-center pulse">
+      <div class="text-6xl">🗓️</div>
+      <div class="space-y-4">
+        <h2 class="text-2xl font-black text-slate-900 leading-tight uppercase tracking-widest">Вы уже зарегистрированы!
+        </h2>
+        <div class="manage-box p-6 space-y-2">
+          <p id="existingBookingText" class="text-slate-700 font-bold leading-relaxed"></p>
+        </div>
+      </div>
+      <div class="flex flex-col gap-4">
+        <div id="managePaymentArea" class="hidden"></div>
+        <button onclick="viewMyTicket()"
+          class="w-full p-6 rounded-3xl bg-emerald-500 text-white font-black uppercase text-xs tracking-widest shadow-lg active:scale-95 transition-all">
+          Просмотреть мой билет
+        </button>
+        <button onclick="handleReschedule()" id="rescheduleBtn"
+          class="w-full p-6 rounded-3xl bg-slate-900 text-white font-black uppercase text-xs tracking-widest active:scale-95 transition-all">
+          Перенести на другую дату
+        </button>
+        <button onclick="handleCancel()" id="cancelBtn"
+          class="w-full p-6 rounded-3xl bg-red-50 text-red-600 font-black uppercase text-xs tracking-widest border-2 border-red-100 active:scale-95 transition-all">
+          Отменить бронь
+        </button>
+        <button id="manageBackBtn" onclick="hideManageModal(); restoreFromModal();"
+          class="w-full p-4 text-slate-400 font-bold text-xs uppercase tracking-widest">Назад</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="confirmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 modal-overlay" onclick="hideConfirmModal(); restoreFromModal();"></div>
+    <div class="bg-white relative w-full max-w-md rounded-[3rem] shadow-2xl overflow-hidden max-h-[82vh] flex flex-col">
+      <!-- Заголовок (фиксированный) -->
+      <div class="p-5 pb-4 text-center border-b border-slate-100 bg-slate-50">
+        <h2 class="text-lg font-black text-slate-900 uppercase tracking-widest leading-tight">Проверьте данные</h2>
+        <p class="text-[10px] font-black text-red-500 uppercase tracking-widest mt-1 animate-pulse">
+          👇 Прокрутите вниз и нажмите кнопку "Подтверждаю"
+        </p>
+      </div>
+
+      <!-- Контент (прокручиваемый) -->
+      <div class="p-5 space-y-5 overflow-y-auto flex-1">
+        <div id="summaryList"
+          class="text-left space-y-2 text-[13px] leading-tight font-bold text-slate-800 bg-slate-50 p-4 rounded-[1.5rem]">
+        </div>
+      </div>
+
+      <!-- Кнопки и инфо (фиксированные внизу) -->
+      <div class="p-5 pt-3 space-y-3 border-t border-slate-100 bg-slate-50">
+        <div class="info-box p-4 text-left space-y-2">
+          <p class="text-[10px] font-black text-blue-600 uppercase tracking-widest">🔄 Управление бронированием</p>
+          <p class="text-[11px] font-bold text-blue-900 leading-relaxed">
+            Если вы захотите <b>отменить бронь</b> или <b>перенести её</b> на другую дату, вы сможете сделать это в
+            любой момент через эту форму.
+            Просто введите свой номер телефона.
+          </p>
+        </div>
+        <div class="flex gap-4">
+          <button onclick="hideConfirmModal(); restoreFromModal();"
+            class="flex-1 p-4 rounded-3xl bg-slate-100 text-slate-400 font-black uppercase text-[10px] tracking-widest active:scale-95 transition-all">Изменить</button>
+          <button onclick="finalSubmit()" id="confirmBtn"
+            class="flex-1 p-4 rounded-3xl bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest shadow-xl active:scale-95 transition-all">Подтверждаю</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="successModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 modal-overlay"></div>
+    <div class="bg-white relative w-full max-w-lg rounded-[3rem] shadow-2xl overflow-hidden max-h-[95vh] flex flex-col">
+      <div class="bg-emerald-500 p-6 text-center text-white space-y-1">
+        <div class="text-4xl">🚣</div>
+        <h2 class="text-2xl font-black uppercase tracking-tighter">Ваш билет на сплав!</h2>
+        <p class="text-[10px] font-bold uppercase tracking-widest flash-text leading-relaxed">
+          📸 Сделайте скриншот!<br>
+          <span class="text-[8px] opacity-100 mt-1 block">Вы всегда можете найти этот билет в главном меню, введя свой
+            номер телефона.</span>
+        </p>
+        <div
+          class="bg-white text-emerald-600 px-4 py-2 rounded-2xl text-[10px] font-black mt-4 shadow-lg border-2 border-emerald-400 inline-block animate-bounce uppercase">
+          👇 Просмотрите весь ваш билет, прокрутив вниз до конца!
+        </div>
+      </div>
+
+      <div class="p-6 md:p-8 space-y-6 overflow-y-auto ticket-border">
+        <div class="grid grid-cols-2 gap-4 bg-slate-50 p-6 rounded-3xl border-2 border-slate-100">
+          <div>
+            <p class="text-[9px] font-black text-slate-400 uppercase">Дата и время</p>
+            <p id="finalDateTime" class="font-black text-sm"></p>
+          </div>
+          <div>
+            <p class="text-[9px] font-black text-slate-400 uppercase">Участники</p>
+            <p id="finalParticipants" class="font-black text-sm"></p>
+          </div>
+          <div class="col-span-2">
+            <p class="text-[9px] font-black text-slate-400 uppercase">Маршрут</p>
+            <p id="finalRoute" class="font-black text-sm"></p>
+          </div>
+          <div class="col-span-2 pt-2 border-t border-slate-200 hidden" id="finalAccBlock">
+            <p class="text-[9px] font-black text-slate-400 uppercase">Проживание</p>
+            <p id="finalAccommodation" class="font-black text-sm text-emerald-600"></p>
+          </div>
+          <div class="col-span-2 pt-2 border-t border-slate-200 hidden" id="finalExtraBlock">
+            <p class="text-[9px] font-black text-slate-400 uppercase">Дополнительно</p>
+            <p id="finalExtra" class="font-black text-sm text-blue-600"></p>
+          </div>
+          <div class="col-span-2 pt-2 border-t border-slate-200">
+            <p class="text-[9px] font-black text-slate-400 uppercase mb-2">Место встречи (GPS)</p>
+            <a id="finalGpsLink" target="_blank"
+              class="block w-full p-4 bg-white border-2 border-emerald-100 rounded-2xl text-emerald-600 font-black text-center shadow-sm active:scale-95 transition-all">
+              Открыть в Навигаторе 📍
+            </a>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="space-y-2">
+            <h3 class="flex items-center gap-2 text-[10px] font-black text-slate-900 uppercase tracking-widest">
+              <span
+                class="bg-slate-900 text-white w-5 h-5 rounded-full flex items-center justify-center text-[8px]">1</span>
+              Программа сплава
+            </h3>
+            <div id="finalProgram"
+              class="bg-blue-50 p-5 rounded-3xl text-blue-900 text-xs font-bold leading-relaxed border border-blue-100">
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <h3 class="flex items-center gap-2 text-[10px] font-black text-slate-900 uppercase tracking-widest">
+              <span
+                class="bg-slate-900 text-white w-5 h-5 rounded-full flex items-center justify-center text-[8px]">2</span>
+              Что взять с собой
+            </h3>
+            <div id="finalMemo"
+              class="bg-emerald-50 p-5 rounded-3xl text-emerald-900 text-xs font-bold leading-relaxed border border-emerald-100">
+            </div>
+          </div>
+        </div>
+
+        <div id="finalNote" class="text-center space-y-2 py-4">
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight">Мы
+            свяжемся с вами за несколько дней до сплава.</p>
+          <button onclick="location.reload()"
+            class="w-full p-5 rounded-3xl bg-slate-900 text-white font-black uppercase text-xs tracking-widest shadow-xl">Закрыть</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Определяем, находимся ли мы в iframe (для iOS fix модальных окон)
+    var isInIframe = false;
+    try { isInIframe = window.self !== window.top; } catch(e) { isInIframe = true; }
+    if (isInIframe) {
+      document.body.classList.add('in-iframe');
+    }
+    function scrollToTopForModal() {
+      if (isInIframe) {
+        var mc = document.querySelector('.max-w-2xl');
+        if (mc) mc.style.display = 'none';
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        // Повторяем прокрутку с задержкой — iOS игнорирует первый вызов в iframe
+        setTimeout(function() {
+          window.scrollTo(0, 0);
+          document.documentElement.scrollTop = 0;
+          document.body.scrollTop = 0;
+          var visibleModal = document.querySelector('#confirmModal:not(.hidden), #manageModal:not(.hidden), #successModal:not(.hidden)');
+          if (visibleModal) visibleModal.scrollIntoView({ behavior: 'auto', block: 'start' });
+        }, 50);
+        setTimeout(function() {
+          window.scrollTo(0, 0);
+          var visibleModal = document.querySelector('#confirmModal:not(.hidden), #manageModal:not(.hidden), #successModal:not(.hidden)');
+          if (visibleModal) visibleModal.scrollIntoView({ behavior: 'auto', block: 'start' });
+        }, 200);
+      }
+    }
+    function restoreFromModal() {
+      if (isInIframe) {
+        var mc = document.querySelector('.max-w-2xl');
+        if (mc) mc.style.display = '';
+        window.scrollTo(0, 0);
+      }
+    }
+
+    // === URL Google Apps Script (ЗАМЕНИТЕ на свой URL развёртывания!) ===
+    var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxGSupSyj1AxsE2713alKD4a3TgiwZR4Kw-t4rdHjOeM29InFO2S8JZH7fmXPyM5Mc/exec';
+
+    // Универсальная функция для API-вызовов к Google Apps Script
+    function callApi(action, params, onSuccess, onError) {
+      var url = SCRIPT_URL + '?action=' + encodeURIComponent(action);
+      if (params) {
+        for (var key in params) {
+          url += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
+        }
+      }
+      fetch(url, { redirect: 'follow' })
+        .then(function(response) { return response.json(); })
+        .then(function(data) { if (onSuccess) onSuccess(data); })
+        .catch(function(err) { if (onError) onError(err); else console.error('API error:', err); });
+    }
+
+    let allDates = [];
+    let existingBooking = null;
+    let isWaitlistMode = false;
+
+    // СРАЗУ ЗАГРУЖАЕМ ДАТЫ (не ждем window.onload)
+    callApi('getDates', null, function(dates) {
+        allDates = dates;
+        const select = document.getElementById('date');
+        const placeholder = document.getElementById('datePlaceholder');
+        if (placeholder) placeholder.textContent = "Нажмите для выбора даты...";
+        while (select.options.length > 1) { select.remove(1); }
+        dates.forEach(d => {
+          const option = document.createElement('option');
+          option.value = `${d.date}_${d.time}_${d.route}`;
+          option.textContent = `${d.date} в ${d.time} — ${d.route}`;
+          select.appendChild(option);
+        });
+      }, function(err) { alert("ОШИБКА ЗАГРУЗКИ ДАТ: " + JSON.stringify(err)); });
+
+    function copyAndGo(id, url) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(id).then(() => {
+          window.open(url, '_blank');
+        }).catch(err => {
+          window.open(url, '_blank');
+        });
+      } else {
+        window.open(url, '_blank');
+      }
+    }
+
+    function handlePhoneInput() {
+      if (validatePhoneUI()) {
+        const phone = getFormattedPhone();
+        document.getElementById('searchingBooking').classList.remove('hidden');
+        callApi('checkExistingBooking', { phone: phone, tripName: document.getElementById('date').value }, function(res) {
+          document.getElementById('searchingBooking').classList.add('hidden');
+          if (res.found) {
+            existingBooking = res;
+            showManageModal(res);
+          }
+        });
+      }
+    }
+
+
+    function showManageModal(res) {
+      const text = document.getElementById('existingBookingText');
+      const backBtn = document.getElementById('manageBackBtn');
+      
+      if (res.type === 'same_day') {
+        text.innerHTML = `<span class="text-red-600 font-black uppercase text-xs">Внимание!</span><br>Вы уже забронированы на эту дату: <br><b>${res.date}</b><br><br><span class="text-red-500 font-black text-[11px] uppercase bg-red-50 p-4 rounded-2xl block border-2 border-red-100">Две брони на один день невозможны. Пожалуйста, свяжитесь с нами для уточнения.</span>`;
+        if (backBtn) backBtn.classList.add('hidden');
+        document.getElementById('managePaymentArea').classList.add('hidden');
+        scrollToTopForModal();
+        document.getElementById('manageModal').classList.remove('hidden');
+        return; 
+      } else {
+        text.innerHTML = `Вы уже записаны на сплав <br><b>${res.date} в ${res.time}</b><br><br><span class="text-emerald-600 text-[10px] font-bold">Вы можете забронировать еще один сплав на другой день!</span>`;
+        if (backBtn) backBtn.classList.remove('hidden');
+      }
+
+      const payArea = document.getElementById('managePaymentArea');
+      if (res.status === 'Ожидает' && res.prepayment > 0) {
+        payArea.innerHTML = `
+          <div class="mt-4 p-5 bg-amber-50 border-2 border-amber-200 rounded-3xl text-center shadow-sm">
+            <p class="text-[11px] font-black text-amber-600 uppercase mb-3 tracking-widest animate-pulse">⚠️ ВАЖНО: После перехода в Telegram нажмите кнопку START</p>
+            <p class="text-[10px] font-bold text-slate-500 mb-4 leading-tight uppercase">Оплатите сейчас или позже, введя свой номер телефона в форму бронирования</p>
+            <a href="https://t.me/TEST_maz_bot?start=PAY_${res.bookingId}" target="_blank" 
+               class="flex items-center justify-center w-full p-5 rounded-2xl bg-amber-500 text-white font-black uppercase text-[10px] tracking-widest shadow-lg active:scale-95 transition-all">
+               ОПЛАТИТЬ В TELEGRAM
+            </a>
+          </div>`;
+        payArea.classList.remove('hidden');
+      } else {
+        payArea.innerHTML = '';
+        payArea.classList.add('hidden');
+      }
+
+      scrollToTopForModal();
+      document.getElementById('manageModal').classList.remove('hidden');
+    }
+
+
+    function hideManageModal() { document.getElementById('manageModal').classList.add('hidden'); }
+
+    function viewMyTicket() {
+      if (!existingBooking) return;
+      document.getElementById('finalDateTime').textContent = `${existingBooking.date} в ${existingBooking.time}`;
+      document.getElementById('finalRoute').textContent = existingBooking.route;
+      document.getElementById('finalGpsLink').href = `https://www.google.com/maps/search/?api=1&query=${existingBooking.gps}`;
+      document.getElementById('finalProgram').innerHTML = existingBooking.program.replace(/\n/g, '<br>');
+      document.getElementById('finalMemo').innerHTML = existingBooking.pamyatka.replace(/\n/g, '<br>');
+
+      const bId = existingBooking.bookingId || "---";
+      const rem = existingBooking.remaining || 0;
+      const status = existingBooking.status || "Ожидает";
+      const adults = existingBooking.adults || 0;
+      const children = existingBooking.children || 0;
+
+      document.getElementById('finalParticipants').textContent = `${adults} взр. + ${children} дет.`;
+
+      // Показываем жилье и услуги если есть
+      const accBlock = document.getElementById('finalAccBlock');
+      if (existingBooking.accommodation && existingBooking.accommodation !== 'нет' && existingBooking.accommodation !== '-') {
+        accBlock.classList.remove('hidden');
+        document.getElementById('finalAccommodation').textContent = "Забронировано проживание: " + existingBooking.accommodation;
+      } else { accBlock.classList.add('hidden'); }
+
+      const extraBlock = document.getElementById('finalExtraBlock');
+      if (existingBooking.extraServices && existingBooking.extraServices !== 'нет' && existingBooking.extraServices !== '-') {
+        extraBlock.classList.remove('hidden');
+        document.getElementById('finalExtra').textContent = "Забронировано доп. услуги: " + existingBooking.extraServices;
+      } else { extraBlock.classList.add('hidden'); }
+
+      if (status === 'Ожидает' && existingBooking.prepayment > 0) {
+        document.getElementById('finalNote').innerHTML = `
+          <div class="space-y-4">
+            <div class="mt-4 p-6 bg-amber-50 border-2 border-amber-200 rounded-[2.5rem] text-center shadow-inner">
+              <p class="text-[11px] font-black text-amber-600 uppercase mb-3 tracking-widest animate-pulse">⚠️ ВАЖНО: После перехода в Telegram нажмите кнопку START</p>
+              <p class="text-[10px] font-bold text-slate-500 mb-4 tracking-tight leading-snug uppercase">
+                Сумма к оплате: ${existingBooking.prepayment} BYN<br>
+                Остаток ${rem} BYN оплачивается на месте
+              </p>
+              <div id="payBtnContainer"></div>
+            </div>
+            <button onclick="location.reload()" class="w-full p-6 rounded-3xl bg-slate-900 text-white font-black uppercase text-xs tracking-widest shadow-2xl active:scale-95 transition-all">ЗАКРЫТЬ</button>
+          </div>
+        `;
+        var payBtn = document.createElement('a');
+        payBtn.href = 'https://t.me/TEST_maz_bot?start=PAY_' + bId;
+        payBtn.target = '_blank';
+        payBtn.className = 'flex items-center justify-center w-full p-5 rounded-2xl bg-amber-500 text-white font-black uppercase text-[10px] tracking-widest shadow-lg active:scale-95 transition-all';
+        payBtn.textContent = 'ОПЛАТИТЬ В TELEGRAM';
+        document.getElementById('payBtnContainer').appendChild(payBtn);
+      } else {
+        document.getElementById('finalNote').innerHTML = `
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight mb-4">Мы свяжемся с вами за несколько дней до сплава.</p>
+          <button onclick="location.reload()" class="w-full p-6 rounded-3xl bg-slate-900 text-white font-black uppercase text-xs tracking-widest shadow-2xl active:scale-95 transition-all">ЗАКРЫТЬ</button>
+        `;
+      }
+
+      hideManageModal();
+      scrollToTopForModal();
+      document.getElementById('successModal').classList.remove('hidden');
+    }
+
+    function handleCancel() {
+      const btn = document.getElementById('cancelBtn');
+      btn.disabled = true;
+      btn.textContent = "ОТМЕНЯЕМ...";
+      callApi('cancelBooking', { phone: getFormattedPhone(), tripName: existingBooking.tripName }, function(res) {
+        alert("Ваша бронь успешно отменена.");
+        location.reload();
+      });
+    }
+
+    function handleReschedule() {
+      const btn = document.getElementById('rescheduleBtn');
+      btn.disabled = true;
+      btn.textContent = "ПОДОЖДИТЕ...";
+      callApi('cancelBooking', { phone: getFormattedPhone(), tripName: existingBooking.tripName }, function(res) {
+        alert("Старая бронь удалена. Теперь вы можете выбрать новую дату.");
+        existingBooking = null;
+        hideManageModal();
+        restoreFromModal();
+        document.getElementById('bookingForm').reset();
+        updatePrices();
+      });
+    }
+
+    function validatePhoneUI() {
+      const input = document.getElementById('phone');
+      const error = document.getElementById('phoneError');
+      let val = input.value.replace(/\D/g, '');
+
+      // Упрощаем: номер должен быть не пустым и содержать хотя бы 7 цифр
+      if (val.length < 7) {
+        input.classList.add('input-error');
+        error.classList.remove('hidden');
+        error.textContent = "Введите корректный номер телефона";
+        return false;
+      }
+      input.classList.remove('input-error');
+      error.classList.add('hidden');
+      return true;
+    }
+
+    function getFormattedPhone() {
+      let val = document.getElementById('phone').value.replace(/\D/g, '');
+      if (val === "") return "";
+
+      // Смарт-логика:
+      // 1. Если 9 цифр - это РБ (добавляем +375)
+      if (val.length === 9) return '+375' + val;
+
+      // 2. Если 11 цифр и начинается на 8 - это РФ (меняем 8 на +7)
+      if (val.length === 11 && val.startsWith('8')) return '+7' + val.substring(1);
+
+      // 3. В остальных случаях просто добавляем + в начало
+      return '+' + val;
+    }
+
+    function changeQty(id, delta) {
+      const input = document.getElementById(id);
+      const val = parseInt(input.value) + delta;
+      if (val >= (id === 'adults' ? 1 : 0)) { input.value = val; updatePrices(); }
+    }
+
+    function setTransfer(val) {
+      document.getElementById('transfer').value = val;
+      document.getElementById('btnAuto').classList.toggle('active', val === 'Нет');
+      document.getElementById('btnBus').classList.toggle('active', val === 'Да');
+      const gpsBlock = document.getElementById('gpsBlock');
+      if (val === 'Нет') gpsBlock.classList.remove('hidden');
+      else gpsBlock.classList.add('hidden');
+      updatePrices();
+    }
+
+    function setTelegram(val) {
+      document.getElementById('hasTelegram').value = val;
+      const btnYes = document.getElementById('tgYes');
+      const btnNo = document.getElementById('tgNo');
+      if (val === 'Да') {
+        btnYes.className = "p-5 rounded-3xl border-2 border-emerald-500 bg-emerald-50 text-emerald-700 font-bold text-lg transition-all active:scale-95 shadow-sm";
+        btnNo.className = "p-5 rounded-3xl border-2 border-slate-100 bg-slate-50 text-slate-400 font-bold text-lg transition-all active:scale-95";
+      } else {
+        btnYes.className = "p-5 rounded-3xl border-2 border-slate-100 bg-slate-50 text-slate-400 font-bold text-lg transition-all active:scale-95";
+        btnNo.className = "p-5 rounded-3xl border-2 border-red-500 bg-red-50 text-red-700 font-bold text-lg transition-all active:scale-95 shadow-sm";
+      }
+    }
+
+    function toggleDog() {
+      const input = document.getElementById('dog');
+      const isDog = input.value === 'Нет';
+      input.value = isDog ? 'Да' : 'Нет';
+      document.getElementById('btnDog').classList.toggle('active', isDog);
+    }
+
+    function setAccommodation(type) {
+      const current = document.getElementById('selectedAccommodation').value;
+      const ids = {
+        'Кемпер': 'acc_camper',
+        'Типи': 'acc_tipi',
+        'Сафари-тент': 'acc_safari',
+        'Наша палатка': 'acc_our_tent',
+        'Своя палатка': 'acc_own_tent'
+      };
+
+      Object.values(ids).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('active');
+      });
+
+      if (current === type) {
+        document.getElementById('selectedAccommodation').value = 'нет';
+      } else {
+        const id = ids[type];
+        if (!id) return;
+        const card = document.getElementById(id);
+        if (!card || card.classList.contains('disabled')) return;
+        document.getElementById('selectedAccommodation').value = type;
+        card.classList.add('active');
+      }
+      updatePrices();
+    }
+
+    function setExtraService(type) {
+      const current = document.getElementById('selectedExtra').value;
+      const ids = { 'Баня + Купель': 'extra_sauna_hot' };
+
+      Object.values(ids).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('active');
+      });
+
+      if (current === type) {
+        document.getElementById('selectedExtra').value = 'нет';
+      } else {
+        const id = ids[type];
+        if (!id) return;
+        const card = document.getElementById(id);
+        if (!card || card.classList.contains('disabled')) return;
+        document.getElementById('selectedExtra').value = type;
+        card.classList.add('active');
+      }
+      updatePrices();
+    }
+
+    function updatePrices() {
+      const selectVal = document.getElementById('date').value;
+      if (!selectVal) {
+        document.getElementById('totalSum').textContent = 'Выберите дату';
+        return;
+      }
+
+      const adults = parseInt(document.getElementById('adults').value) || 0;
+      const children = parseInt(document.getElementById('children').value) || 0;
+      const totalPeople = adults + children;
+      const transferVal = document.getElementById('transfer').value;
+      const [dPart, tPart, rPart] = selectVal.split('_');
+      const selected = allDates.find(d => d.date === dPart && d.time.substring(0, 5) === tPart.substring(0, 5) && d.route === rPart);
+
+      if (selected) {
+        document.getElementById('gpsValue').textContent = selected.gps;
+
+        // ЛОГИКА ЖИЛЬЯ (Случь и Припять)
+        const accSection = document.getElementById('accommodationSection');
+        const isBaseRoute = selected.route.toLowerCase().includes('случ') || selected.route.toLowerCase().includes('припят');
+
+        if (isBaseRoute) {
+          accSection.classList.remove('hidden');
+
+          // Обновляем цены и наличие на карточках (безопасно)
+          const setLabel = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+          setLabel('price_camper_label', `${selected.priceCamper} BYN`);
+          setLabel('price_tipi_label', `${selected.priceTipi} BYN`);
+          setLabel('price_safari_label', `${selected.priceSafari} BYN`);
+          setLabel('price_ourtent_label', `${selected.priceOurTent} BYN`);
+          setLabel('price_owntent_label', `${selected.priceOwnTent} BYN/чел`);
+          setLabel('price_saunahot_label', `${selected.priceSaunaHot} BYN`);
+
+          const remCamper = 2 - (selected.occCamper || 0);
+          const remTipi = 1 - (selected.occTipi || 0);
+          const remSafari = 1 - (selected.occSafari || 0);
+          const remOurTent = 1 - (selected.occOurTent || 0);
+          const remSauna = 1 - (selected.occSauna || 0);
+
+          const updateAccCard = (id, rem, labelId) => {
+            const card = document.getElementById(id);
+            if (!card) return;
+            const label = document.getElementById(labelId);
+            if (!label) return;
+            if (rem <= 0) {
+              card.classList.add('disabled');
+              label.textContent = "Мест нет";
+            } else {
+              card.classList.remove('disabled');
+              label.textContent = `Свободно: ${rem} шт.`;
+            }
+          };
+
+          updateAccCard('acc_camper', remCamper, 'rem_camper_label');
+          updateAccCard('acc_tipi', remTipi, 'rem_tipi_label');
+          updateAccCard('acc_safari', remSafari, 'rem_safari_label');
+          updateAccCard('acc_our_tent', remOurTent, 'rem_ourtent_label');
+
+          // Баня
+          const remSaunaHotLabel = document.getElementById('rem_saunahot_label');
+          const saunaHotCard = document.getElementById('extra_sauna_hot');
+          if (saunaHotCard && remSaunaHotLabel) {
+            if (remSauna <= 0) {
+              saunaHotCard.classList.add('disabled');
+              remSaunaHotLabel.textContent = "Занято";
+            } else {
+              saunaHotCard.classList.remove('disabled');
+              remSaunaHotLabel.textContent = "Свободно";
+            }
+          }
+        } else {
+          accSection.classList.add('hidden');
+          document.getElementById('selectedAccommodation').value = 'нет';
+          document.getElementById('selectedExtra').value = 'нет';
+        }
+
+        const availInfo = document.getElementById('availabilityInfo');
+        const availText = document.getElementById('availabilityText');
+        availInfo.classList.remove('hidden');
+        availText.textContent = `Осталось: ${selected.rem2M} двухместных и ${selected.rem3M} трехместных`;
+
+        const foodBlock = document.getElementById('foodBlock');
+        const foodPrefs = document.getElementById('foodPrefs');
+        if (foodBlock) {
+          if (selected.hasFood) {
+            foodBlock.classList.remove('hidden');
+          } else {
+            foodBlock.classList.add('hidden');
+            if (foodPrefs) foodPrefs.value = "";
+          }
+        }
+
+        const needTransfer = transferVal === 'Да';
+        const hasTransferChoice = transferVal !== "";
+
+        if (hasTransferChoice) {
+          let total = (adults * (needTransfer ? (selected.priceAdultWith || 0) : (selected.priceAdultNo || 0))) +
+            (children * (needTransfer ? (selected.priceChildWith || 0) : (selected.priceChildNo || 0)));
+
+          // Плюсуем жилье и баню
+          let accSum = 0;
+          const accType = document.getElementById('selectedAccommodation').value;
+          if (accType === 'Кемпер') accSum = selected.priceCamper;
+          else if (accType === 'Типи') accSum = selected.priceTipi;
+          else if (accType === 'Сафари-тент') accSum = selected.priceSafari;
+          else if (accType === 'Наша палатка') accSum = selected.priceOurTent;
+          else if (accType === 'Своя палатка') accSum = (adults + children) * selected.priceOwnTent;
+
+          let extraSum = 0;
+          const extraType = document.getElementById('selectedExtra').value;
+          if (extraType === 'Баня + Купель') extraSum = selected.priceSaunaHot;
+
+          total += (accSum + extraSum);
+          document.getElementById('totalSum').textContent = total + ' BYN';
+        } else {
+          document.getElementById('totalSum').textContent = 'Выберите проезд';
+        }
+
+        const tLimitInfo = document.getElementById('transferLimitInfo');
+        const deliveryWarning = document.getElementById('deliveryWarning');
+        let transferError = false;
+
+        const isWeekend = (selected.dayType && selected.dayType.includes('вых'));
+        if (isWeekend && transferVal === 'Нет') {
+          deliveryWarning.classList.remove('hidden');
+        } else {
+          deliveryWarning.classList.add('hidden');
+        }
+
+        const gpsBlock = document.getElementById('gpsBlock');
+        const gpsValue = document.getElementById('gpsValue');
+        if (isWeekend && transferVal === 'Нет') {
+          gpsBlock.classList.remove('hidden');
+          gpsValue.textContent = selected.gps;
+        } else {
+          gpsBlock.classList.add('hidden');
+        }
+
+        const transferWarningBlock = document.getElementById('transferWarning');
+        if (transferVal === 'Да') {
+          transferWarningBlock.classList.remove('hidden');
+        } else {
+          transferWarningBlock.classList.add('hidden');
+        }
+
+        if (needTransfer && selected.remTransfer < 999) {
+          if (totalPeople > selected.remTransfer) {
+            tLimitInfo.innerHTML = selected.remTransfer > 0 ? `На этот сплав осталось всего ${selected.remTransfer} мест с трансфером.<br><span class="text-[11px] font-black text-red-700 bg-red-100 px-3 py-1 rounded-xl mt-2 inline-block">Недостаточно свободных мест для всех участников</span>` : "МЕСТ НА ТРАНСФЕР БОЛЬШЕ НЕТ";
+            tLimitInfo.classList.remove('hidden');
+            transferError = true;
+          } else {
+            tLimitInfo.innerHTML = `Осталось мест на трансфер: ${selected.remTransfer}`;
+            tLimitInfo.classList.remove('hidden');
+          }
+        } else {
+          tLimitInfo.classList.add('hidden');
+        }
+
+        let k2 = 0, k3 = 0;
+        let found = false;
+
+        if (totalPeople === 1) {
+          found = false;
+        } else {
+          if (totalPeople % 2 === 0) { k2 = totalPeople / 2; k3 = 0; }
+          else { k3 = 1; k2 = (totalPeople - 3) / 2; }
+
+          if (k2 <= selected.rem2M && k3 <= selected.rem3M) {
+            found = true;
+          } else {
+            for (let testK3 = 0; testK3 <= selected.rem3M; testK3++) {
+              let remainingPeople = totalPeople - (testK3 * 3);
+              if (remainingPeople <= 0) { k2 = 0; k3 = testK3; found = true; break; }
+              let testK2 = Math.ceil(remainingPeople / 2);
+              if (testK2 <= selected.rem2M) { k2 = testK2; k3 = testK3; found = true; break; }
+            }
+          }
+        }
+
+        let kText = "";
+        isWaitlistMode = !found;
+
+        if (!found) {
+          if (totalPeople === 1) {
+            kText = "<span class='text-amber-500 font-medium leading-tight text-sm'>Мы можем предложить вам запись в лист ожидания на подсадку в порядке очереди. <br>При наличии свободных мест мы сможем подсадить вас в 2-местную либо 3-местную байдарку к другим туристам. <br>Завершите бронирование, чтобы закрепить за собой место в очереди. Мы свяжемся с вами за несколько дней до сплава.</span>";
+          } else {
+            kText = "<span class='text-amber-500 font-bold leading-tight'>Места на этот сплав закончились. Завершите бронирование, чтобы занять свое место в листе ожидания в порядке очереди. Мы сразу свяжемся с вами, если освободится байдарка.</span>";
+          }
+        } else {
+          let parts = [];
+          if (k2 > 0) parts.push(k2 + " шт 2-местных");
+          if (k3 > 0) parts.push(k3 + " шт 3-местных");
+          kText = parts.join(" + ");
+
+          if (totalPeople === 2 && k3 === 1 && selected.rem2M < 1) {
+            kText += "<br><span class='text-emerald-400 text-xs font-bold leading-relaxed'>2-местные байдарки закончились, но у нас остались свободные 3-местные. <br>Мы можем предложить вам 3-местную байдарку для вашего сплава. <br>Если этот вариант вам подходит, пожалуйста, продолжите бронирование.</span>";
+          }
+        }
+
+        document.getElementById('k2').value = k2;
+        document.getElementById('k3').value = k3;
+        document.getElementById('kayakText').innerHTML = kText;
+
+        const submitBtn = document.getElementById('mainSubmitBtn');
+        if (transferError) {
+          submitBtn.textContent = "МЕСТ НЕТ";
+          submitBtn.disabled = true;
+          submitBtn.style.background = "#ef4444";
+        } else if (isWaitlistMode) {
+          submitBtn.textContent = "В лист ожидания";
+          submitBtn.disabled = false;
+          submitBtn.style.background = "";
+          document.getElementById('deliveryWarning').classList.add('hidden');
+          document.getElementById('totalSum').textContent = '0 BYN (ожидание)';
+        } else {
+          submitBtn.textContent = "Забронировать";
+          submitBtn.disabled = false;
+          submitBtn.style.background = "";
+        }
+        validateAgreements();
+      }
+    }
+
+    function handleSubmit() {
+      const name = document.getElementById('name').value.trim();
+      const phoneVal = document.getElementById('phone').value.replace(/\D/g, '');
+      const insta = document.getElementById('instagram').value.trim();
+
+      if (name === "" || phoneVal.length < 9 || insta === "") {
+        alert("Пожалуйста, заполните все обязательные поля!");
+        return;
+      }
+      if (document.getElementById('date').value === "" || document.getElementById('transfer').value === "") {
+        alert("Выберите дату и способ проезда!");
+        return;
+      }
+      showConfirmModal();
+    }
+
+    function showConfirmModal() {
+      const list = document.getElementById('summaryList');
+      const selectVal = document.getElementById('date').value;
+      const [dPart, tPart, rPart] = selectVal.split('_');
+      const selected = allDates.find(d => d.date === dPart && d.time.substring(0, 5) === tPart.substring(0, 5) && d.route === rPart);
+      let gpsRow = document.getElementById('transfer').value === 'Нет' ? `
+        <div class="flex flex-col border-b border-slate-200 pb-3 gap-1">
+          <span class="text-slate-400 font-black uppercase text-[9px]">📍 Точка сбора (GPS)</span>
+          <span class="text-red-600 font-black text-sm">${selected.gps}</span>
+        </div>` : "";
+
+      list.innerHTML = `
+        ${isWaitlistMode ? '<div class="bg-amber-100 text-amber-800 p-3 rounded-xl font-black text-center mb-4 text-xs uppercase">⚠️ ЛИСТ ОЖИДАНИЯ</div>' : ''}
+        <div class="flex justify-between border-b border-slate-200 pb-1.5"><span class="text-slate-400 font-black uppercase text-[9px]">Клиент</span><span>${document.getElementById('name').value}</span></div>
+        <div class="flex justify-between border-b border-slate-200 pb-1.5"><span class="text-slate-400 font-black uppercase text-[9px]">Телефон</span><span>${getFormattedPhone()}</span></div>
+        <div class="flex justify-between border-b border-slate-200 pb-1.5"><span class="text-slate-400 font-black uppercase text-[9px]">Сплав</span><span>${selected.date} в ${selected.time}</span></div>
+        <div class="flex justify-between border-b border-slate-200 pb-1.5"><span class="text-slate-400 font-black uppercase text-[9px]">Участники</span><span>${document.getElementById('adults').value} взр. + ${document.getElementById('children').value} дет.</span></div>
+        <div class="flex justify-between border-b border-slate-200 pb-1.5"><span class="text-slate-400 font-black uppercase text-[9px]">Байдарки</span><span>${document.getElementById('kayakText').textContent}</span></div>
+        <div class="flex justify-between border-b border-slate-200 pb-1.5"><span class="text-slate-400 font-black uppercase text-[9px]">Трансфер</span><span>${document.getElementById('transfer').value === 'Да' ? 'Нужен' : 'Свое авто'}</span></div>
+        ${document.getElementById('selectedAccommodation').value !== 'нет' ? `<div class="flex justify-between border-b border-slate-200 pb-1.5"><span class="text-slate-400 font-black uppercase text-[9px]">Жилье</span><span>${document.getElementById('selectedAccommodation').value}</span></div>` : ''}
+        ${document.getElementById('selectedExtra').value !== 'нет' ? `<div class="flex justify-between border-b border-slate-200 pb-1.5"><span class="text-slate-400 font-black uppercase text-[9px]">Доп. услуги</span><span>${document.getElementById('selectedExtra').value}</span></div>` : ''}
+        ${gpsRow}
+        <div class="flex justify-between pt-4 text-xl font-black"><span>ИТОГО</span><span>${isWaitlistMode ? '0 BYN (ожидание)' : document.getElementById('totalSum').textContent}</span></div>
+      `;
+      scrollToTopForModal();
+      document.getElementById('confirmModal').classList.remove('hidden');
+    }
+
+    function hideConfirmModal() { document.getElementById('confirmModal').classList.add('hidden'); }
+
+    function finalSubmit() {
+      const btn = document.getElementById('confirmBtn');
+      const selectVal = document.getElementById('date').value;
+      const [dPart, tPart, rPart] = selectVal.split('_');
+      const selected = allDates.find(d => d.date === dPart && d.time.substring(0, 5) === tPart.substring(0, 5) && d.route === rPart);
+      const needTransfer = document.getElementById('transfer').value === 'Да';
+      btn.disabled = true;
+      btn.textContent = "СЕКУНДУ...";
+
+      const formData = {
+        date: selected.date, time: selected.time, displayDate: `${selected.date} ${selected.time}`,
+        route: selected.route, type: selected.type, dayType: selected.dayType, gps: selected.gps,
+        name: document.getElementById('name').value, phone: getFormattedPhone(), instagram: document.getElementById('instagram').value,
+        adults: document.getElementById('adults').value, children: document.getElementById('children').value,
+        transfer: document.getElementById('transfer').value, dog: document.getElementById('dog').value,
+        comment: document.getElementById('comment').value,
+        foodPrefs: document.getElementById('foodPrefs') ? document.getElementById('foodPrefs').value : "",
+        k2: document.getElementById('k2').value,
+        k3: document.getElementById('k3').value,
+        sum: document.getElementById('totalSum').textContent,
+        kayakDisplay: document.getElementById('kayakText').textContent,
+        unitPriceAdult: needTransfer ? selected.priceAdultWith : selected.priceAdultNo,
+        unitPriceChild: needTransfer ? selected.priceChildWith : selected.priceChildNo,
+        isWaitlist: isWaitlistMode,
+        hasTelegram: document.getElementById('hasTelegram').value,
+        accommodation: document.getElementById('selectedAccommodation').value,
+        extraServices: document.getElementById('selectedExtra').value
+      };
+
+      callApi('processBooking', { data: encodeURIComponent(JSON.stringify(formData)) }, function(res) {
+        hideConfirmModal();
+        if (res.success) {
+          const bookingId = res.bookingId || "ID_PENDING";
+          existingBooking = { ...formData, bookingId: bookingId, prepayment: res.prepayment, remaining: res.remaining, status: "Ожидает", program: selected.program || "", pamyatka: selected.pamyatka || "" };
+          viewMyTicket();
+        } else {
+          alert("Ошибка: " + res.message);
+          btn.disabled = false;
+          btn.textContent = "ПОДТВЕРЖДАЮ";
+        }
+      });
+    }
+  </script>
+  <div id="agreementModal" class="modal-agreement">
+    <div class="agreement-overlay" onclick="closeAgreement()"></div>
+    <div class="agreement-content">
+      <h2 id="agreementTitle" class="text-xl font-black text-slate-900 uppercase tracking-widest mb-6"></h2>
+      <div id="agreementText" class="agreement-text mb-8"></div>
+      <button onclick="closeAgreement()"
+        class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase text-xs tracking-widest active:scale-95 transition-all">
+        Понятно, закрыть
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function validateAgreements() {
+      const c1 = document.getElementById('check_contract').checked;
+      const c2 = document.getElementById('check_policy').checked;
+      document.getElementById('mainSubmitBtn').disabled = !(c1 && c2);
+    }
+
+    function showAgreement(type) {
+      const modal = document.getElementById('agreementModal');
+      const title = document.getElementById('agreementTitle');
+      const text = document.getElementById('agreementText');
+
+      if (type === 'contract') {
+        title.textContent = 'Публичный договор оферты';
+        text.innerHTML = `
+          <p class="font-bold mb-2">Основные правила пользования байдарками:</p>
+          1. Не садитесь и не вставайте ногами на байдарку, стоящую на берегу. Категорически запрещено вставать на кильсон.
+          2. Перед спуском на воду убедитесь, что на байдарке отсутствуют повреждения.
+          3. Осмотрите место спуска на отсутствие острых предметов – камней, коряг, стекла.
+          4. Спуск на воду и погрузка вещей осуществляется только на воде (глубина 20-30 см).
+          5. Вещи необходимо размещать равномерно для избежания крена.
+          6. Во время посадки и высадки не поднимайтесь в полный рост, придерживайтесь за борта.
+          7. Следите за препятствиями на воде заблаговременно. Особенно опасны подводные препятствия.
+          8. Запрещается переносить нагруженную байдарку — это ведет к поломке каркаса.
+          9. Байдарку из воды следует выносить пустую и только вдвоём.
+          
+          <p class="mt-4 font-bold">Полные правила и условия доступны по ссылке ниже.</p>
+          <a href="https://mazaysplav.by/oferta" target="_blank" class="inline-block mt-2 text-emerald-600 font-bold underline">Открыть полную версию на сайте</a>
+        `;
+      } else {
+        title.textContent = 'Политика обработки данных';
+        text.innerHTML = `
+          <p class="font-bold mb-2">Мы собираем следующие данные:</p>
+          - Фамилия, имя, отчество;
+          - Контактный телефон;
+          - Адрес доставки (для сертификатов);
+          - Данные о платежах;
+          - История заказов.
+          
+          <p class="font-bold mt-4 mb-2">Цели обработки:</p>
+          - Бронирование байдарок и организация услуг;
+          - Связь для уточнения деталей заявки (viber, Telegram);
+          - Оформление сертификатов и клиентская поддержка;
+          - Направление информационных сообщений.
+          
+          <p class="font-bold mt-4 mb-2">Ваши права:</p>
+          - Запрашивать информацию о своих данных;
+          - Требовать исправления или удаления данных;
+          - Отозвать согласие в любой момент.
+
+          <a href="https://mazaysplav.by/dogovor" target="_blank" class="inline-block mt-4 text-emerald-600 font-bold underline">Открыть на сайте</a>
+        `;
+      }
+
+      scrollToTopForModal();
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeAgreement() {
+      document.getElementById('agreementModal').style.display = 'none';
+      document.body.style.overflow = '';
+      restoreFromModal();
+    }
+  </script>
+  <!-- Блок защиты от зависания загрузки -->
+  <div id="loadFailsafe">
+    <div class="failsafe-card space-y-6">
+      <div class="text-6xl animate-bounce">⏳</div>
+      <h2 class="text-xl font-black text-slate-900 uppercase tracking-widest">Проблемы с загрузкой?</h2>
+      <p class="text-sm font-bold text-slate-500 leading-relaxed">
+        Похоже, ваш браузер блокирует защищенное соединение Google. Нажмите кнопку ниже, чтобы открыть форму напрямую.
+      </p>
+      <a href="https://script.google.com/macros/s/AKfycbxGSupSyj1AxsE2713alKD4a3TgiwZR4Kw-t4rdHjOeM29InFO2S8JZH7fmXPyM5Mc/exec" target="_blank" rel="noopener"
+        style="display:block; text-align:center; text-decoration:none;"
+        class="w-full p-6 rounded-3xl bg-emerald-500 text-white font-black uppercase text-xs tracking-widest shadow-lg active:scale-95 transition-all">
+        Открыть в браузере 🚀
+      </a>
+      <p class="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Это безопасно и решит проблему</p>
+    </div>
+  </div>
+
+  <script>
+    // Таймер защиты от зависания отключен для GitHub Pages (здесь нет проблем с iframe)
+    /* let failsafeTimer = setTimeout(() => {
+      scrollToTopForModal();
+      document.getElementById('loadFailsafe').style.display = 'flex';
+    }, 12000); */
+
+    function openInExternalBrowser() {
+      const url = window.location.href;
+      window.open(url, '_blank');
+    }
+  </script>
+</body>
+
+</html>

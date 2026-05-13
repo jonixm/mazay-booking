@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card: #161b26;
+      --accent: #3b82f6;
+      --green: #10b981;
+      --purple: #8b5cf6;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+    
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 15px;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .dashboard {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    /* Шапка */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 0 5px;
+    }
+
+    .header h1 {
+      font-size: 22px;
+      margin: 0;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .refresh-btn {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--accent);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      padding: 8px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: 0.2s;
+    }
+
+    .refresh-btn:hover { background: var(--accent); color: white; }
+
+    /* Сетка карточек KPI */
+    .kpi-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .kpi-card { position: relative; overflow: hidden; }
+    .kpi-card::after {
+      content: ''; position: absolute; top: 0; right: 0; width: 40px; height: 40px;
+      background: radial-gradient(circle at top right, rgba(255,255,255,0.05), transparent);
+    }
+
+    .kpi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px; display: block; }
+    .kpi-value { font-size: 22px; font-weight: 700; margin: 0; }
+    .kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* Графики */
+    .charts-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .chart-card { min-height: 260px; display: flex; flex-direction: column; }
+    .chart-card h4 { margin: 0 0 15px 0; font-size: 14px; font-weight: 600; color: var(--muted); }
+    .canvas-wrapper { flex-grow: 1; position: relative; }
+
+    /* Таблица */
+    .table-card { padding: 0; overflow: hidden; }
+    .table-header { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
+    .table-header h4 { margin: 0; font-size: 14px; }
+    
+    .scroll-area { max-height: 250px; overflow-y: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; background: rgba(255,255,255,0.02); color: var(--muted); font-size: 11px; padding: 12px 16px; font-weight: 600; }
+    td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+    tr:hover { background: rgba(255,255,255,0.01); }
+
+    /* Лоадер */
+    #loader {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999;
+    }
+    .spinner { width: 40px; height: 40px; border: 3px solid rgba(59, 130, 246, 0.2); border-top-color: var(--accent); border-radius: 50%; animation: s 0.8s linear infinite; }
+    @keyframes s { to { transform: rotate(360deg); } }
+
+  </style>
+</head>
+<body>
+
+  <div id="loader">
+    <div class="spinner"></div>
+    <p style="margin-top: 15px; font-size: 13px; color: var(--muted)">Загрузка аналитики...</p>
+  </div>
+
+  <div class="dashboard">
+    <div class="header">
+      <h1>MAZAYSPLAV PRO ANALYTICS</h1>
+      <button class="refresh-btn" onclick="loadData()">Обновить данные</button>
+    </div>
+
+    <!-- Первая строка KPI (Деньги) -->
+    <div class="kpi-container" style="grid-template-columns: repeat(4, 1fr);">
+      <div class="card kpi-card">
+        <span class="kpi-label">Всего выручка</span>
+        <p class="kpi-value" id="rev-total">0</p>
+        <span class="kpi-sub">За всё время</span>
+      </div>
+      <div class="card kpi-card">
+        <span class="kpi-label">Сезон 2026</span>
+        <p class="kpi-value" id="rev-season" style="color: var(--green)">0</p>
+        <span class="kpi-sub">С начала года</span>
+      </div>
+      <div class="card kpi-card">
+        <span class="kpi-label">Текущий месяц</span>
+        <p class="kpi-value" id="rev-month">0</p>
+        <span class="kpi-sub" id="month-name">За май</span>
+      </div>
+      <div class="card kpi-card">
+        <span class="kpi-label">За неделю</span>
+        <p class="kpi-value" id="rev-week">0</p>
+        <span class="kpi-sub">7 последних дней</span>
+      </div>
+    </div>
+
+    <!-- Вторая строка KPI (Люди) -->
+    <div class="kpi-container" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="card kpi-card">
+        <span class="kpi-label">Всего участников</span>
+        <p class="kpi-value" id="p-total">0</p>
+        <div style="font-size: 11px; margin-top: 5px; color: var(--muted)">
+          Взрослых: <span id="p-adults" style="color:var(--text)">0</span> | 
+          Детей: <span id="p-kids" style="color:var(--text)">0</span>
+        </div>
+      </div>
+      <div class="card kpi-card">
+        <span class="kpi-label">Всего сплавов</span>
+        <p class="kpi-value" id="b-total">0</p>
+        <span class="kpi-sub">Из листа Сплавы</span>
+      </div>
+      <div class="card kpi-card">
+        <span class="kpi-label">Популярная река</span>
+        <p class="kpi-value" id="top-river" style="font-size: 16px">—</p>
+        <span class="kpi-sub">Лидер сезона</span>
+      </div>
+    </div>
+
+    <!-- Третья строка KPI (Жилье) -->
+    <div class="kpi-container" style="grid-template-columns: 1fr 3fr;">
+      <div class="card kpi-card">
+        <span class="kpi-label">Топ жилье</span>
+        <p class="kpi-value" id="top-acc" style="font-size: 16px; color: var(--purple)">—</p>
+        <span class="kpi-sub">Выбор гостей</span>
+      </div>
+      <div class="card kpi-card" style="display: flex; align-items: center; justify-content: space-around; padding: 10px 20px;">
+        <div id="acc-details-list" style="display: flex; width: 100%; justify-content: space-around;">
+           <!-- Сюда вставим счетчики через JS -->
+           <div style="text-align: center; color: var(--muted); font-size: 12px;">Загрузка статистики по жилью...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Графики -->
+    <div class="charts-row">
+      <div class="card chart-card">
+        <h4>Динамика выручки (BYN)</h4>
+        <div class="canvas-wrapper"><canvas id="barChart"></canvas></div>
+      </div>
+      <div class="card chart-card">
+        <h4>Популярность рек</h4>
+        <div class="canvas-wrapper"><canvas id="pieChart"></canvas></div>
+      </div>
+      <div class="card chart-card">
+        <h4>Тип транспорта</h4>
+        <div class="canvas-wrapper"><canvas id="doughnutChart"></canvas></div>
+      </div>
+      <div class="card chart-card">
+        <h4>Тип жилья</h4>
+        <div class="canvas-wrapper"><canvas id="accChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Таблица архива -->
+    <div class="card table-card">
+      <div class="table-header">
+        <h4>Детальная история по месяцам</h4>
+      </div>
+      <div class="scroll-area">
+        <table>
+          <thead>
+            <tr>
+              <th>МЕСЯЦ</th>
+              <th>СПЛАВОВ</th>
+              <th>ЛЮДЕЙ</th>
+              <th>ВЫРУЧКА (BYN)</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let charts = {};
+
+    function loadData() {
+      document.getElementById('loader').style.display = 'flex';
+      google.script.run
+        .withSuccessHandler(data => {
+          document.getElementById('loader').style.display = 'none';
+          renderUI(data);
+        })
+        .withFailureHandler(err => {
+          document.getElementById('loader').innerHTML = `<div style="color: #ef4444; text-align: center;">
+            <p>❌ Системная ошибка: ${err.toString()}</p>
+            <button onclick="loadData()" class="refresh-btn" style="margin-top: 10px;">Обновить страницу</button>
+          </div>`;
+        })
+        .getDashboardData();
+    }
+
+    function renderUI(data) {
+      const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+      
+      try {
+        if (data.error) {
+          document.getElementById('loader').style.display = 'flex';
+          document.getElementById('loader').innerHTML = `<div style="color: #ef4444; text-align: center;">
+            <p>⚠️ Ошибка: ${data.error}</p>
+            <button onclick="loadData()" class="refresh-btn" style="margin-top: 10px;">Попробовать снова</button>
+          </div>`;
+          return;
+        }
+
+      // Числа
+      setTxt('rev-total', data.revenue.total.toLocaleString());
+      setTxt('rev-season', data.revenue.season.toLocaleString());
+      setTxt('rev-month', data.revenue.month.toLocaleString());
+      setTxt('rev-week', data.revenue.week.toLocaleString());
+      setTxt('p-total', data.participants.total);
+      setTxt('p-adults', data.participants.adults);
+      setTxt('p-kids', data.participants.kids);
+      setTxt('b-total', data.tripsCount);
+
+      // Топ река
+      let maxRiver = "—"; let maxValR = -1;
+      for (let r in data.rivers) { if (data.rivers[r] > maxValR) { maxValR = data.rivers[r]; maxRiver = r; } }
+      setTxt('top-river', maxRiver);
+
+      // Детализация жилья (Большой блок)
+      const accList = document.getElementById('acc-details-list');
+      accList.innerHTML = '';
+      const accTypes = ['Кемпер', 'Типи', 'Сафари-тент', 'Наша палатка', 'Своя палатка', 'Баня + Купель'];
+      let maxAcc = "—"; let maxValA = -1;
+      
+      accTypes.forEach(type => {
+        const count = data.accommodation[type] || 0;
+        if (count > maxValA && count > 0) { maxValA = count; maxAcc = type; }
+        
+        accList.innerHTML += `
+          <div style="text-align: center; min-width: 80px;">
+            <span style="font-size: 10px; color: var(--muted); text-transform: uppercase; display: block; margin-bottom: 4px;">${type}</span>
+            <span style="font-size: 18px; font-weight: 700; color: ${count > 0 ? 'var(--text)' : 'var(--muted)'}">${count}</span>
+          </div>
+        `;
+      });
+      setTxt('top-acc', maxAcc);
+
+      // Сортировка месяцев (С МАЯ и вниз до Декабря)
+      const sortedKeys = Object.keys(data.monthly)
+        .filter(k => parseInt(k.split('.')[0]) >= 5)
+        .sort((a,b) => {
+          const [ma, ya] = a.split('.'); const [mb, yb] = b.split('.');
+          return new Date(ya, ma-1) - new Date(yb, mb-1);
+        });
+      
+      const monthDisplayNames = sortedKeys.map(k => data.monthly[k].name);
+      
+      initChart('barChart', 'bar', {
+        labels: monthDisplayNames,
+        datasets: [{
+          label: 'Выручка',
+          data: sortedKeys.map(k => data.monthly[k].revenue),
+          backgroundColor: '#3b82f6',
+          borderRadius: 6
+        }]
+      }, { scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }, x: { ticks: { color: '#94a3b8' } } } });
+
+      // Пирог (Реки)
+      initChart('pieChart', 'pie', {
+        labels: Object.keys(data.rivers),
+        datasets: [{
+          data: Object.values(data.rivers),
+          backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'],
+          borderWidth: 0
+        }]
+      });
+
+      // Пончик (Транспорт)
+      initChart('doughnutChart', 'doughnut', {
+        labels: ['Трансфер', 'Авто'],
+        datasets: [{
+          data: [data.logistics.transfer, data.logistics.auto],
+          backgroundColor: ['#3b82f6', '#f43f5e'],
+          borderWidth: 0
+        }]
+      }, { cutout: '75%' });
+
+      // Пирог (Жилье)
+      initChart('accChart', 'pie', {
+        labels: Object.keys(data.accommodation),
+        datasets: [{
+          data: Object.values(data.accommodation),
+          backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f43f5e', '#14b8a6'],
+          borderWidth: 0
+        }]
+      });
+
+      // Таблица
+      const tbody = document.getElementById('table-body');
+      tbody.innerHTML = '';
+      sortedKeys.forEach(k => {
+        const item = data.monthly[k];
+        tbody.innerHTML += `<tr>
+          <td style="font-weight:600; color:var(--accent)">${item.name.toUpperCase()}</td>
+          <td>${item.trips}</td>
+          <td>${item.people}</td>
+          <td style="font-weight:700">${item.revenue.toLocaleString()}</td>
+        </tr>`;
+      });
+    } catch (err) {
+      document.getElementById('loader').style.display = 'flex';
+      document.getElementById('loader').innerHTML = `<div style="color: #ef4444; text-align: center;">
+        <p>❌ Ошибка отрисовки: ${err.toString()}</p>
+        <button onclick="loadData()" class="refresh-btn" style="margin-top: 10px;">Попробовать снова</button>
+      </div>`;
+    }
+  }
+
+    function initChart(id, type, data, options = {}) {
+      if (charts[id]) charts[id].destroy();
+      const ctx = document.getElementById(id).getContext('2d');
+      charts[id] = new Chart(ctx, {
+        type: type,
+        data: data,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: { padding: 12 },
+          plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, color: '#94a3b8', font: { size: 10 } } } },
+          ...options
+        }
+      });
+    }
+
+    window.onload = loadData;
+  </script>
+</body>
+</html>
